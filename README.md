@@ -8,13 +8,15 @@ pipenv install
 ```
 
 ## Usage
-1. Put your picture files inside the `input` directory.
-2. `python3 main.py`
+1. Train your models
+2. file structure
+3. Put your files inside the `validation` directory.
+4. `python3 main.py`
 
 ## Todo
-- Train models
-- improve Readme
-- sort by model and date?
+- add documentation - how to use
+- add support for 2D / 3D pictures
+- add tests
 
 
 ## Reference

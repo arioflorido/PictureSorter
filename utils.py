@@ -1,11 +1,17 @@
 import os
 from pathlib import Path
-from constants import REQUIRED_DIRS, ENCODINGS_DIR, VALIDATION_DIR
+from datetime import datetime
+from constants import (
+    REQUIRED_DIRS,
+    ENCODINGS_DIR,
+    VALIDATION_DIR,
+    EXIF_DATETIME_ORIGINAL_TAG,
+)
 
 
-def get_filename(filepath):
-    """Returns the filename of the provided filepath."""
-    return os.path.split(filepath)[-1]
+def get_file_extension(filepath):
+    """Returns the file extension."""
+    return os.path.splitext(filepath)[1]
 
 
 def move(old_filepath, new_filepath):
@@ -44,3 +50,8 @@ def get_image_files():
         for filename in filenames:
             # TODO Filter image files only
             yield os.path.join(dirpath, filename)
+
+
+def get_file_created_datetime(filepath):
+    """Returns the created time of the file."""
+    return datetime.fromtimestamp(os.path.getctime(filepath)).strftime("%Y%m%d_%H%M%S")
