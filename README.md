@@ -14,3 +14,8 @@ pipenv install
 ## Todo
 - Train models
 - improve Readme
+- sort by model and date?
+
+
+## Reference
+- https://realpython.com/face-recognition-with-python/

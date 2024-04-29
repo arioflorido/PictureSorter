@@ -3,10 +3,25 @@ from pathlib import Path
 from constants import REQUIRED_DIRS, ENCODINGS_DIR, VALIDATION_DIR
 
 
+def get_filename(filepath):
+    """Returns the filename of the provided filepath."""
+    return os.path.split(filepath)[-1]
+
+
+def move(old_filepath, new_filepath):
+    """Moves a file to a new location."""
+    os.rename(old_filepath, new_filepath)
+
+
+def mkdir(directory_name):
+    """Creates a directory."""
+    Path(directory_name).mkdir(exist_ok=True)
+
+
 def setup():
     """Creates required directories if they do not exist."""
     for directory in REQUIRED_DIRS:
-        Path(directory).mkdir(exist_ok=True)
+        mkdir(directory)
 
 
 def get_face_encodings():

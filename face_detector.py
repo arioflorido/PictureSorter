@@ -4,8 +4,8 @@ from collections import Counter
 import logging
 from pathlib import Path
 import face_recognition
-from constants import TRAINING_DIR, ENCODINGS_DIR, UNKNOWN_FACE
-from utils import get_face_encodings, get_image_files
+from constants import TRAINING_DIR, ENCODINGS_DIR, UNKNOWN
+from utils import get_face_encodings
 
 logger = logging.getLogger(__name__)
 
@@ -71,27 +71,26 @@ def encode_known_faces(model_name):
         pickle.dump(name_encodings, fh)
 
 
-def recognize_faces():
+def recognize_faces(image_filepath):
     """Recognize the faces in the images using the available face encodings."""
-    for image_filepath in get_image_files():
-        input_face_locations, input_face_encodings = extract_face_encodings(
-            image_filepath
+    input_face_locations, input_face_encodings = extract_face_encodings(image_filepath)
+
+    recognized_faces = []
+    unrecognized_faces_coordinates = []
+    for bounding_box, unknown_encoding in zip(
+        input_face_locations, input_face_encodings
+    ):
+        recognized_faces.append(_recognize_face(unknown_encoding))
+        unrecognized_faces_coordinates.append(bounding_box)
+
+    if unrecognized_faces_coordinates:
+        logger.info(
+            "Unrecognized %s face(s) detected in '%s'.",
+            len(recognized_faces),
+            image_filepath,
         )
 
-        recognized_faces = []
-        unrecognized_faces_coordinates = []
-        for bounding_box, unknown_encoding in zip(
-            input_face_locations, input_face_encodings
-        ):
-            recognized_faces.append(_recognize_face(unknown_encoding))
-            unrecognized_faces_coordinates.append(bounding_box)
-
-        if unrecognized_faces_coordinates:
-            logger.info(
-                "Unrecognized %s face(s) detected in '%s'.",
-                len(recognized_faces),
-                image_filepath,
-            )
+    return recognized_faces
 
 
 def _recognize_face(unknown_encoding):
@@ -110,4 +109,4 @@ def _recognize_face(unknown_encoding):
             )
             if votes:
                 return votes.most_common(1)[0][0]
-            return UNKNOWN_FACE
+            return UNKNOWN

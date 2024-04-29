@@ -1,5 +1,6 @@
 import argparse
-from face_detector import encode_known_faces, recognize_faces
+from face_detector import encode_known_faces
+from picture_sorter import sort_images
 from utils import setup
 
 
@@ -17,4 +18,4 @@ if __name__ == "__main__":
     if args.train:
         encode_known_faces(args.train)
 
-    recognize_faces()
+    sort_images()
