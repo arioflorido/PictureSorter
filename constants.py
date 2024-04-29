@@ -1,0 +1,8 @@
+OUTPUT_DIR = "output"
+TRAINING_DIR = "training"
+VALIDATION_DIR = "validation"
+ENCODINGS_DIR = "encodings"
+
+REQUIRED_DIRS = (OUTPUT_DIR, TRAINING_DIR, VALIDATION_DIR, ENCODINGS_DIR)
+
+UNKNOWN_FACE = "unknown_face"
