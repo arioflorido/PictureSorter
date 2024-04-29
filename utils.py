@@ -48,6 +48,7 @@ def get_image_files():
 
     for dirpath, _, filenames in os.walk(VALIDATION_DIR):
         for filename in filenames:
+            print(filename)
             # TODO Filter image files only
             yield os.path.join(dirpath, filename)
 

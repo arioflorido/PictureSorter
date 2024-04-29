@@ -15,11 +15,11 @@ from constants import OUTPUT_DIR, EXIF_DATETIME_ORIGINAL_TAG, EXIF_DATETIME_MODI
 logger = logging.getLogger(__name__)
 
 
-def get_image_creation_or_modified_date(image_filepath):
+def get_image_modified_or_created_date(image_filepath):
     """
-    Get the creation date or modified date of an image from the EXIF data. If
-    both dates are not available fro EXIF, get the creation date from the file's
-    metadata.
+    Get the modified date or creation date (whichever is available) of an image
+    from the EXIF data. If both dates are not available fro EXIF, get the
+    creation date from the file's metadata.
     """
     try:
         with Image.open(image_filepath) as img:
@@ -46,7 +46,7 @@ def determine_image_filename(image_filepath, model_name):
     Determines the image's new filename based on the image's model name and
     creation date.
     """
-    created_datetime = get_image_creation_or_modified_date(image_filepath)
+    created_datetime = get_image_modified_or_created_date(image_filepath)
     new_image_filename = (
         f"{model_name}_{created_datetime}{get_file_extension(image_filepath)}"
     )
@@ -56,13 +56,17 @@ def determine_image_filename(image_filepath, model_name):
 def sort_image_by_face_recognition():
     """Sorts the images by face recognition"""
     for image_filepath in get_image_files():
-        for recognized_face in recognize_faces(image_filepath):
-            output_filepath = os.path.join(OUTPUT_DIR, recognized_face)
-            mkdir(output_filepath)
-            new_image_filename = determine_image_filename(
-                image_filepath, recognized_face
-            )
-            new_image_filepath = os.path.join(output_filepath, new_image_filename)
+        try:
+            for recognized_face in recognize_faces(image_filepath):
+                output_filepath = os.path.join(OUTPUT_DIR, recognized_face)
+                mkdir(output_filepath)
+                new_image_filename = determine_image_filename(
+                    image_filepath, recognized_face
+                )
+                new_image_filepath = os.path.join(output_filepath, new_image_filename)
 
-            move(image_filepath, new_image_filepath)
-            logger.info(new_image_filepath)
+                move(image_filepath, new_image_filepath)
+                logger.info(new_image_filepath)
+        except Exception as error:
+            logger.error(error)
+            raise

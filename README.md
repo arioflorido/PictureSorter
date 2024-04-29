@@ -17,6 +17,12 @@ pipenv install
 - add documentation - how to use
 - add support for 2D / 3D pictures
 - add tests
+- add filtering - only process image files....
+- detect duplicates
+- make logging work
+- dockerize?
+- fix renaming
+- fix bug
 
 
 ## Reference
