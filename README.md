@@ -13,6 +13,13 @@ pipenv install
 3. Put your files inside the `validation` directory.
 4. `python3 main.py`
 
+
+## Running tests
+You can run test via this command:
+```bash
+python -m unittest discover tests
+```
+
 ## Todo
 - add documentation - how to use
 - add support for 2D / 3D pictures

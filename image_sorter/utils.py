@@ -1,11 +1,10 @@
 import os
 from pathlib import Path
 from datetime import datetime
-from constants import (
+from .constants import (
     REQUIRED_DIRS,
     ENCODINGS_DIR,
     VALIDATION_DIR,
-    EXIF_DATETIME_ORIGINAL_TAG,
 )
 
 

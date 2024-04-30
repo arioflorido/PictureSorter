@@ -4,8 +4,9 @@ from collections import Counter
 import logging
 from pathlib import Path
 import face_recognition
-from constants import TRAINING_DIR, ENCODINGS_DIR, UNKNOWN
-from utils import get_face_encodings
+
+from .constants import TRAINING_DIR, ENCODINGS_DIR, UNKNOWN
+from .utils import get_face_encodings
 
 logger = logging.getLogger(__name__)
 
