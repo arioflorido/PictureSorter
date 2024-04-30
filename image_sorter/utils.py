@@ -5,6 +5,7 @@ from .constants import (
     REQUIRED_DIRS,
     ENCODINGS_DIR,
     VALIDATION_DIR,
+    TRAINING_DIR
 )
 
 
@@ -55,3 +56,22 @@ def get_image_files():
 def get_file_created_datetime(filepath):
     """Returns the created time of the file."""
     return datetime.fromtimestamp(os.path.getctime(filepath)).strftime("%Y%m%d_%H%M%S")
+
+
+def get_training_images(model_name):
+    """
+    Generates the path of the available images of the specified model name to be
+    used for training.
+    """
+    training_images_directory = os.path.join(TRAINING_DIR, model_name)
+
+    if not os.path.isdir(training_images_directory):
+        raise ValueError(
+            f"{training_images_directory} is not a valid path or directory."
+        )
+
+    training_images = []
+    for dirpath, _, filenames in os.walk(training_images_directory):
+        for filename in filenames:
+            training_images.append(os.path.join(dirpath, filename))
+    return training_images

@@ -1,7 +1,7 @@
 import os
 import logging
 from PIL import Image
-from .face_detector import recognize_faces
+# from .face_detector import recognize_faces
 from .utils import (
     move,
     mkdir,
@@ -27,19 +27,21 @@ class ImageSorter:
         """Load image using Pillow.open()"""
         try:
             return Image.open(self.image_filepath)
-        except Exception:
+        except:
             logger.error(
                 "Failed to load image : %s", self.image_filepath, exc_info=True
             )
-            return None
+            raise
 
     def get_exif_data(self):
         """Get the EXIF data of the image."""
         try:
             return self.load_image().getexif()
-        except Exception:
+        except:
             logger.error(
-                "Unable to fetch %s's EXIF data.", self.image_filepath, exc_info=True
+                "Unable to extract the EXIF data from %s.",
+                self.image_filepath,
+                exc_info=True,
             )
             return {}
 
@@ -65,17 +67,17 @@ class ImageSorter:
         new_image_filename = f"{model_name}_{image_created_datetime}{get_file_extension(self.image_filepath)}"
         return new_image_filename
 
-    def sort_image_by_face_recognition(self):
-        """Sorts the images by face recognition."""
-        try:
-            for recognized_face in recognize_faces(self.image_filepath):
-                output_filepath = os.path.join(OUTPUT_DIR, recognized_face)
-                mkdir(output_filepath)
-                new_image_filename = self.determine_new_image_filename(recognized_face)
-                new_image_filepath = os.path.join(output_filepath, new_image_filename)
+    # def sort_image_by_face_recognition(self):
+    #     """Sorts the images by face recognition."""
+    #     try:
+    #         for recognized_face in recognize_faces(self.image_filepath):
+    #             output_filepath = os.path.join(OUTPUT_DIR, recognized_face)
+    #             mkdir(output_filepath)
+    #             new_image_filename = self.determine_new_image_filename(recognized_face)
+    #             new_image_filepath = os.path.join(output_filepath, new_image_filename)
 
-                move(self.image_filepath, new_image_filepath)
-                logger.info(new_image_filepath)
-        except Exception as error:
-            logger.error(error)
-            raise
+    #             move(self.image_filepath, new_image_filepath)
+    #             logger.info(new_image_filepath)
+    #     except Exception as error:
+    #         logger.error(error)
+    #         raise
