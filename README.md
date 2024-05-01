@@ -30,6 +30,7 @@ python -m unittest discover tests
 - dockerize?
 - fix renaming
 - fix bug
+- show list of available models
 
 
 ## Reference

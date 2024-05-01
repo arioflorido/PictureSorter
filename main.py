@@ -24,6 +24,5 @@ if __name__ == "__main__":
         face_detector = FaceDetector(training_images, model_name)
         face_detector.encode_known_faces()
 
-
     # for image_filepath in get_image_files():
     #     ImageSorter(image_filepath).sort_image_by_face_recognition()

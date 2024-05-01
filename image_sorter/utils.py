@@ -65,10 +65,10 @@ def get_training_images(model_name):
     """
     training_images_directory = os.path.join(TRAINING_DIR, model_name)
 
+    if not os.path.exists(training_images_directory):
+        raise ValueError(f"{training_images_directory} does not exists.")
     if not os.path.isdir(training_images_directory):
-        raise ValueError(
-            f"{training_images_directory} is not a valid path or directory."
-        )
+        raise ValueError(f"{training_images_directory} is not a  directory.")
 
     training_images = []
     for dirpath, _, filenames in os.walk(training_images_directory):
