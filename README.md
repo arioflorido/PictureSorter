@@ -35,3 +35,15 @@ python -m unittest discover tests
 
 ## Reference
 - https://realpython.com/face-recognition-with-python/
+
+
+algo
+  face detection:
+    load image
+    detect faces
+    encode known faces
+
+  face recognition:
+    load image
+    detect faces
+    recognize faces
