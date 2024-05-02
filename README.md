@@ -31,6 +31,8 @@ python -m unittest discover tests
 - fix renaming
 - fix bug
 - show list of available models
+- fix logging....
+- create directory for no face detected
 
 
 ## Reference

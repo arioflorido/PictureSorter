@@ -1,5 +1,6 @@
 import os
 import logging
+import datetime
 from PIL import Image
 
 # from .face_detector import recognize_faces
@@ -45,7 +46,24 @@ class ImageSorter:
 
     def get_image_modified_date(self, exif_data):
         """Get the image's modified date, if it exist."""
-        return exif_data.get(EXIF_DATETIME_MODIFIED_TAG, None)
+        image_modified_date = exif_data.get(EXIF_DATETIME_MODIFIED_TAG, None)
+        if not image_modified_date:
+            return None
+
+        try:
+            # truncate the string to remove any (hidden) extra characters
+            image_modified_date = image_modified_date[:19]
+
+            # Parse the input string into a datetime object
+            dt_obj = datetime.datetime.strptime(image_modified_date, "%Y:%m:%d %H:%M:%S")
+
+            # Format the datetime object to YYYYMMDD_HHMMSS
+            return dt_obj.strftime("%Y%m%d_%H%M%S")
+        except Exception:
+            logger.error("Formatting of image_modified_date %s failed.", image_modified_date)
+            return None
+
+
 
     def get_image_created_date(self, exif_data):
         """Get the image's created date, if it exist."""
@@ -72,6 +90,7 @@ class ImageSorter:
         output_filepath = os.path.join(OUTPUT_DIR, model_name)
         mkdir(output_filepath)
         new_image_filename = self.determine_new_image_filename(model_name, image_filepath)
+        # validation/024xc5.jpg  test me
         return os.path.join(output_filepath, new_image_filename)
 
     def sort_image_by_face_recognition(self, image_filepath):
@@ -81,7 +100,7 @@ class ImageSorter:
             for recognized_face in face_recognizer.recognize_faces(image_filepath):
                 new_image_filepath = self.determine_new_image_filepath(recognized_face, image_filepath)
                 move(image_filepath, new_image_filepath)
-                logger.info("{%s} -> {%s}", image_filepath, new_image_filepath)
+                logger.info("Moved %s to %s", image_filepath, new_image_filepath)
         except Exception as error:
             logger.error(error, exc_info=True)
             raise
