@@ -25,9 +25,9 @@ if __name__ == "__main__":
         face_recognizer = FaceRecognizer()
         face_recognizer.encode_known_faces(model_name, training_images)
 
-    images_for_validation = get_image_files()
+    images_for_sorting = get_image_files()
     image_sorter = ImageSorter()
     # image_sorter.sort_image_by_face_recognition(images_for_validation[0])
-    image_sorter.sort_images_by_face_recognition(images_for_validation)
+    image_sorter.sort_images_by_face_recognition(images_for_sorting)
     # for image_filepath in get_image_files():
-        # ImageSorter(image_filepath).sort_image_by_face_recognition()
+    # ImageSorter(image_filepath).sort_image_by_face_recognition()

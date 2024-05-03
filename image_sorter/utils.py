@@ -1,11 +1,13 @@
 import os
+import shutil
 import logging
 from pathlib import Path
 from datetime import datetime
-from .constants import REQUIRED_DIRS, ENCODINGS_DIR, VALIDATION_DIR, TRAINING_DIR
+from .constants import REQUIRED_DIRS, ENCODINGS_DIR, INPUT_DIR, TRAINING_DIR
 
-logging.basicConfig(level = logging.INFO)
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
 
 def get_file_extension(filepath):
     """Returns the file extension."""
@@ -14,11 +16,8 @@ def get_file_extension(filepath):
 
 def move(old_filepath, new_filepath):
     """Moves a file to a new location."""
-    try:
-        os.rename(old_filepath, new_filepath)
-    except Exception:
-        logger.error("Failed to move %s to %s.", old_filepath, new_filepath, exc_info=True)
-        raise
+    shutil.move(old_filepath, new_filepath)
+
 
 def mkdir(directory_name):
     """Creates a directory."""
@@ -44,11 +43,11 @@ def get_face_encodings():
 
 def get_image_files():
     """Generates the path of the image files from the validation directory"""
-    if not os.path.isdir(VALIDATION_DIR):
-        raise ValueError(f"{VALIDATION_DIR} is not a valid path or directory.")
+    if not os.path.isdir(INPUT_DIR):
+        raise ValueError(f"{INPUT_DIR} is not a valid path or directory.")
 
     images = []
-    for dirpath, _, filenames in os.walk(VALIDATION_DIR):
+    for dirpath, _, filenames in os.walk(INPUT_DIR):
         for filename in filenames:
             # TODO Filter image files only
             # SUPPORTED_IMAGES = (JPG, PNG,)

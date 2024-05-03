@@ -5,51 +5,62 @@ import logging
 from pathlib import Path
 import face_recognition
 
-from .constants import ENCODINGS_DIR
-from .utils import get_face_encodings
+from .constants import ENCODINGS_DIR,  NO_FACES_DETECTED_DIR
+from .utils import get_face_encodings, mkdir, move
 
-logging.basicConfig(level = logging.INFO)
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
 class FaceRecognizer:
-    # def __init__(self, image_filepath_list):
-    #     self.image_filepath_list = image_filepath_list
 
     def load_image(self, image_filepath):
         """Load image using face_recognition.load_image_file()"""
-        try:
-            return face_recognition.load_image_file(image_filepath)
-        except:
-            logger.error("Failed to load image : %s", image_filepath, exc_info=True)
-            raise
+        return face_recognition.load_image_file(image_filepath)
 
-    def detect_face_locations(self, image, model="hog"):
+    def determine_no_face_detected_image_filepath(self, image_filepath):
+        """Determines where images with no faces detected will be stored."""
+        mkdir(NO_FACES_DETECTED_DIR)
+        return os.path.join(NO_FACES_DETECTED_DIR, os.path.basename(image_filepath))
+
+
+
+    def detect_face_locations_using_hog(self, image):
+        """
+        Detects and returns the locations of faces in the image using HOG model
+        which utilizes the CPU.
+        """
+        return face_recognition.face_locations(image, model="hog")
+
+    def detect_face_locations_using_cnn(self, image):
+        """
+        Detects and returns the locations of faces in the image using CNN model
+        which utilizes the GPU.
+        """
+        return face_recognition.face_locations(image, model="cnn")
+
+    def detect_face_locations(self, image):
         """Detects and returns the locations of faces in the image."""
-        try:
-            return face_recognition.face_locations(image, model=model)
-        except:
-            logger.error(
-                "Failed to detect face locations from the image.", exc_info=True
-            )
-            raise
+        return self.detect_face_locations_using_hog(image)
+
+
 
     def get_face_encodings(self, image_filepath):
         """Returns the face encodings from the detected face in the image."""
-        try:
-            image = self.load_image(image_filepath)
-            face_locations = self.detect_face_locations(image)
+        image = self.load_image(image_filepath)
+        face_locations = self.detect_face_locations(image)
 
-            if not face_locations:
-                logger.info("No faces detected in %s", image_filepath)
-                return {}
-
-            return face_recognition.face_encodings(image, face_locations)
-        except:
-            logger.error(
-                "Failed to get the face encodings from the image.", exc_info=True
+        if not face_locations:
+            logger.info("No faces were found in the image: %s", image_filepath)
+            no_face_image_filepath = (
+                self.determine_no_face_detected_image_filepath(image_filepath)
             )
-            raise
+            move(image_filepath, no_face_image_filepath)
+            logger.info(
+                "Moved %s to %s", image_filepath, no_face_image_filepath
+            )
+            return []
+        return face_recognition.face_encodings(image, face_locations)
 
     def encode_known_faces(self, model_name, image_filepath_list):
         """
@@ -72,12 +83,8 @@ class FaceRecognizer:
         encoding_filename = f"{model_name}.pkl"
         encoding_output = os.path.join(ENCODINGS_DIR, encoding_filename)
 
-        try:
-            with open(encoding_output, mode="wb") as fh:
-                pickle.dump(encodings, fh)
-        except Exception as error:
-            logger.error(error, exc_info=True)
-            raise
+        with open(encoding_output, mode="wb") as fh:
+            pickle.dump(encodings, fh)
 
     def recognize_faces(self, image_filepath):
         """

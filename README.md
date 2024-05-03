@@ -32,7 +32,9 @@ python -m unittest discover tests
 - fix bug
 - show list of available models
 - fix logging....
-- create directory for no face detected
+- create directory for no face detected.
+- detect side-view faces
+- improve speed / performance. how? cython?
 
 
 ## Reference
