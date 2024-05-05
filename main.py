@@ -24,7 +24,7 @@ if __name__ == "__main__":
         training_images = get_training_images(model_name)
         face_recognizer = FaceRecognizer()
         face_recognizer.encode_known_faces(model_name, training_images)
-
-    images_for_sorting = get_image_files()
-    image_sorter = ImageSorter()
-    image_sorter.sort_images_by_face_recognition(images_for_sorting)
+    else:
+        images_for_sorting = get_image_files()
+        image_sorter = ImageSorter()
+        image_sorter.sort_images_by_face_recognition(images_for_sorting)

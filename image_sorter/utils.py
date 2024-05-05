@@ -13,6 +13,7 @@ def get_file_extension(filepath):
     """Returns the file extension."""
     return os.path.splitext(filepath)[1]
 
+
 def copy(source_path, dest_filepath):
     """
     Copies a file to a new location while preserving the file's properties.

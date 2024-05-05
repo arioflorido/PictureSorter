@@ -31,14 +31,16 @@ python -m unittest discover tests
 - fix renaming
 - fix bug
 - show list of available models
-- fix logging....
+- fix logging.... (basicconfig)
 - create directory for no face detected.
 - detect side-view faces
 - improve speed / performance. how? cython?
 - detect duplicate files...
 - archive processed images (tar.gz)
-
-
+- improve logging:
+    - include counts, etc
+- what if multiple faces detected in picture?
+    - create model_name_x_model_name.jpg?
 
 ## Reference
 - https://realpython.com/face-recognition-with-python/
