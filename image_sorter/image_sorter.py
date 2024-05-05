@@ -5,6 +5,7 @@ from PIL import Image
 
 from .face_recognizer import FaceRecognizer
 from .utils import (
+    copy,
     move,
     mkdir,
     get_file_extension,
@@ -12,6 +13,7 @@ from .utils import (
 )
 from .constants import (
     OUTPUT_DIR,
+    ARCHIVE_DIR,
     EXIF_DATETIME_ORIGINAL_TAG,
     EXIF_DATETIME_MODIFIED_TAG,
 )
@@ -21,6 +23,9 @@ logger = logging.getLogger(__name__)
 
 
 class ImageSorter:
+    def __init__(self):
+        self.face_recognizer = FaceRecognizer()
+
     def load_image(self, image_filepath):
         """Load image using Pillow.open()"""
         return Image.open(image_filepath)
@@ -93,19 +98,21 @@ class ImageSorter:
 
     def sort_image_by_face_recognition(self, image_filepath):
         """Sorts the image by face recognition."""
-        face_recognizer = FaceRecognizer()
-        for recognized_face in face_recognizer.recognize_faces(image_filepath):
-            recognized_image_filepath = (
-                self.determine_recognized_image_filepath(
-                    recognized_face, image_filepath
-                )
+        for recognized_face in self.face_recognizer.recognize_faces(image_filepath):
+            recognized_image_filepath = self.determine_recognized_image_filepath(
+                recognized_face, image_filepath
             )
-            move(image_filepath, recognized_image_filepath)
-            logger.info(
-                "Moved %s to %s", image_filepath, recognized_image_filepath
-            )
+            copy(image_filepath, recognized_image_filepath)
+            logger.info("Copied %s to %s", image_filepath, recognized_image_filepath)
+
+        # archive processed images
+        move(image_filepath, ARCHIVE_DIR)
 
     def sort_images_by_face_recognition(self, image_filepath_list):
         """Sort the images by face recognition."""
+        image_processed = 0
         for image_filepath in image_filepath_list:
             self.sort_image_by_face_recognition(image_filepath)
+            image_processed += 1
+
+        logger.info("Sorted %s file(s).", image_processed)

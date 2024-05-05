@@ -13,10 +13,16 @@ def get_file_extension(filepath):
     """Returns the file extension."""
     return os.path.splitext(filepath)[1]
 
+def copy(source_path, dest_filepath):
+    """
+    Copies a file to a new location while preserving the file's properties.
+    """
+    shutil.copy(source_path, dest_filepath)
 
-def move(old_filepath, new_filepath):
+
+def move(source_path, dest_filepath):
     """Moves a file to a new location."""
-    shutil.move(old_filepath, new_filepath)
+    shutil.move(source_path, dest_filepath)
 
 
 def mkdir(directory_name):
@@ -30,15 +36,17 @@ def setup():
         mkdir(directory)
 
 
-def get_face_encodings():
+def get_face_encodings_from_image():
     """Generates the path of the available face encodings."""
     if not os.path.isdir(ENCODINGS_DIR):
         raise ValueError(f"{ENCODINGS_DIR} is not a valid path or directory.")
 
+    existing_face_encodings = []
     for dirpath, _, filenames in os.walk(ENCODINGS_DIR):
         for filename in filenames:
             if filename.lower().endswith(".pkl"):
-                yield os.path.join(dirpath, filename)
+                existing_face_encodings.append(os.path.join(dirpath, filename))
+    return existing_face_encodings
 
 
 def get_image_files():

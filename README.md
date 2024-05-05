@@ -35,6 +35,9 @@ python -m unittest discover tests
 - create directory for no face detected.
 - detect side-view faces
 - improve speed / performance. how? cython?
+- detect duplicate files...
+- archive processed images (tar.gz)
+
 
 
 ## Reference
