@@ -117,7 +117,9 @@ class ImageSorter:
         # archive processed images
         # TODO zip processed images
         # TODO create separate function
-        archive_image_filepath = os.path.join(ARCHIVE_DIR, os.path.basename(image_filepath))
+        archive_image_filepath = os.path.join(
+            ARCHIVE_DIR, os.path.basename(image_filepath)
+        )
         move(image_filepath, archive_image_filepath)
 
     def sort_images_by_face_recognition(self, image_filepath_list):
@@ -129,7 +131,9 @@ class ImageSorter:
                 image_processed += 1
             except NoFacesDetectedError:
                 # TODO create separate function
-                no_face_image_filepath = os.path.join(NO_FACES_DETECTED_DIR, os.path.basename(image_filepath))
+                no_face_image_filepath = os.path.join(
+                    NO_FACES_DETECTED_DIR, os.path.basename(image_filepath)
+                )
                 move(image_filepath, no_face_image_filepath)
 
         logger.info("Sorted %s image(s).", image_processed)

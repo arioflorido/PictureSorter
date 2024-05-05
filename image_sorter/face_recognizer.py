@@ -42,7 +42,10 @@ class FaceRecognizer:
         """Detects and returns the locations of faces in the image."""
         face_locations = self.detect_face_locations_using_hog(image)
         if not face_locations:
-            raise NoFacesDetectedError
+            logger.info("No face detected using HOG. Switching to CNN for face detection...")
+            face_locations = self.detect_face_locations_using_cnn(image)
+            if not face_locations:
+                raise NoFacesDetectedError
         logger.info("Detected %s face(s) in the image.", len(face_locations))
         return face_locations
 

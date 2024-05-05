@@ -41,6 +41,7 @@ python -m unittest discover tests
     - include counts, etc
 - what if multiple faces detected in picture?
     - create model_name_x_model_name.jpg?
+- try rotating the image?
 
 ## Reference
 - https://realpython.com/face-recognition-with-python/
