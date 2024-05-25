@@ -10,6 +10,7 @@ from .utils import (
     mkdir,
     get_file_extension,
     get_file_created_datetime,
+    sanitize_filename,
 )
 from .exceptions import NoFacesDetectedError
 from .constants import (
@@ -95,8 +96,24 @@ class ImageSorter:
         new_image_filename = self.determine_new_image_filename(
             model_name, image_filepath
         )
-        # validation/024xc5.jpg  test me
+        # validation/024xc5.jpg test me
         return os.path.join(destination_dir, new_image_filename)
+
+    def determine_image_archive_filepath(self, image_filepath):
+        """Determines where archived image will be stored."""
+        archive_image_filepath = os.path.join(
+            ARCHIVE_DIR, os.path.basename(sanitize_filename(image_filepath))
+        )
+        # input/Hayley+Williams+5rtr.jpg test me
+        return archive_image_filepath
+
+    def determine_no_face_detected_filepath(self, image_filepath):
+        """Determines where image with no faces will be stored."""
+        no_face_image_filepath = os.path.join(
+            NO_FACES_DETECTED_DIR, sanitize_filename(image_filepath)
+        )
+        # input/Hayley+Williams+5rtr.jpg test me
+        return no_face_image_filepath
 
     def sort_image_by_face_recognition(self, image_filepath):
         """Sorts the image by face recognition."""
@@ -117,9 +134,7 @@ class ImageSorter:
         # archive processed images
         # TODO zip processed images
         # TODO create separate function
-        archive_image_filepath = os.path.join(
-            ARCHIVE_DIR, os.path.basename(image_filepath)
-        )
+        archive_image_filepath = self.determine_image_archive_filepath(image_filepath)
         move(image_filepath, archive_image_filepath)
 
     def sort_images_by_face_recognition(self, image_filepath_list):
@@ -131,9 +146,7 @@ class ImageSorter:
                 image_processed += 1
             except NoFacesDetectedError:
                 # TODO create separate function
-                no_face_image_filepath = os.path.join(
-                    NO_FACES_DETECTED_DIR, os.path.basename(image_filepath)
-                )
+                no_face_image_filepath = self.determine_no_face_detected_filepath(image_filepath)
                 move(image_filepath, no_face_image_filepath)
 
         logger.info("Sorted %s image(s).", image_processed)

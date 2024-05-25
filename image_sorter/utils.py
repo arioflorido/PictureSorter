@@ -3,6 +3,8 @@ import shutil
 import logging
 from pathlib import Path
 from datetime import datetime
+from pathlib import Path
+from slugify import slugify
 from .constants import REQUIRED_DIRS, ENCODINGS_DIR, INPUT_DIR, TRAINING_DIR
 
 logging.basicConfig(level=logging.INFO)
@@ -12,6 +14,13 @@ logger = logging.getLogger(__name__)
 def get_file_extension(filepath):
     """Returns the file extension."""
     return os.path.splitext(filepath)[1]
+
+
+def sanitize_filename(filename):
+    """Sanitize the filename by slugifying."""
+    basename = Path(filename).stem
+    ext = Path(filename).suffix
+    return f"{slugify(basename)}{ext}"
 
 
 def copy(source_path, dest_filepath):

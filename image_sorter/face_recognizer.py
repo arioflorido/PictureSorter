@@ -21,7 +21,6 @@ class FaceRecognizer:
 
     def determine_no_face_detected_image_filepath(self, image_filepath):
         """Determines where images with no faces detected will be stored."""
-        mkdir(NO_FACES_DETECTED_DIR)
         return os.path.join(NO_FACES_DETECTED_DIR, os.path.basename(image_filepath))
 
     def detect_face_locations_using_hog(self, image):
@@ -36,24 +35,29 @@ class FaceRecognizer:
         Detects and returns the locations of faces in the image using CNN model
         which utilizes the GPU.
         """
-        return face_recognition.face_locations(image, model="cnn")
+        try:
+            return face_recognition.face_locations(image, model="cnn")
+        except MemoryError:
+            # input/wallpaper-557528.jpg test
+            logger.error("Encountered memory error.")
+            return None
 
     def detect_face_locations(self, image):
         """Detects and returns the locations of faces in the image."""
         face_locations = self.detect_face_locations_using_hog(image)
         if not face_locations:
-            logger.info("No face detected using HOG. Switching to CNN for face detection...")
+            logger.info(
+                "No face detected using HOG. Switching to CNN for face detection..."
+            )
             face_locations = self.detect_face_locations_using_cnn(image)
             if not face_locations:
                 raise NoFacesDetectedError
         logger.info("Detected %s face(s) in the image.", len(face_locations))
         return face_locations
 
-    def get_face_encodings_from_image(
-        self,
-        image_filepath,
-    ):
+    def get_face_encodings_from_image(self, image_filepath):
         """Returns the face encodings from the detected face in the image."""
+        logger.info("Processing %s", image_filepath)
         image = self.load_image(image_filepath)
         face_locations = self.detect_face_locations(image)
         return face_recognition.face_encodings(image, face_locations)
