@@ -1,5 +1,12 @@
 import os
 
+# class RequiredDirectories:
+#     INPUT_DIR = "input"
+#     OUTPUT_DIR = "output"
+#     TRAINING_DIR = "training"
+#     ARCHIVE_DIR = "archive"
+#     ENCODINGS_DIR = "encodings"
+
 INPUT_DIR = "input"
 OUTPUT_DIR = "output"
 TRAINING_DIR = "training"
@@ -13,3 +20,8 @@ EXIF_DATETIME_ORIGINAL_TAG = 36867
 EXIF_DATETIME_MODIFIED_TAG = 306
 UNKNOWN_FACES = "unknown_faces"
 NO_FACES_DETECTED = "no_faces_detected"
+
+
+class FaceDetectionModel:
+    HOG = "hog"
+    CNN = "cnn"

@@ -6,7 +6,12 @@ from pathlib import Path
 import face_recognition
 
 from .exceptions import NoFacesDetectedError
-from .constants import ENCODINGS_DIR, NO_FACES_DETECTED_DIR, UNKNOWN_FACES
+from .constants import (
+    ENCODINGS_DIR,
+    NO_FACES_DETECTED_DIR,
+    UNKNOWN_FACES,
+    FaceDetectionModel,
+)
 from .utils import get_face_encodings_from_image, mkdir
 
 logging.basicConfig(level=logging.INFO)
@@ -42,36 +47,46 @@ class FaceRecognizer:
             logger.error("Encountered memory error.")
             return None
 
-    def detect_face_locations(self, image):
+    def detect_face_locations(self, image, face_detection_model):
         """Detects and returns the locations of faces in the image."""
-        face_locations = self.detect_face_locations_using_hog(image)
-        if not face_locations:
-            logger.info(
-                "No face detected using HOG. Switching to CNN for face detection..."
-            )
+        if face_detection_model == FaceDetectionModel.HOG:
+            face_locations = self.detect_face_locations_using_hog(image)
+        elif face_detection_model == FaceDetectionModel.CNN:
             face_locations = self.detect_face_locations_using_cnn(image)
-            if not face_locations:
-                raise NoFacesDetectedError
+
+        # if not face_locations:
+        #     logger.info(
+        #         "No face detected using HOG. Switching to CNN for face detection..."
+        #     )
+        #     face_locations = self.detect_face_locations_using_cnn(image)
+        # if not face_locations:
+        #     raise NoFacesDetectedError
         logger.info("Detected %s face(s) in the image.", len(face_locations))
         return face_locations
 
-    def get_face_encodings_from_image(self, image_filepath):
+    def get_face_encodings_from_image(self, image_filepath, face_detection_model):
         """Returns the face encodings from the detected face in the image."""
         logger.info("Processing %s", image_filepath)
         image = self.load_image(image_filepath)
-        face_locations = self.detect_face_locations(image)
+        face_locations = self.detect_face_locations(image, face_detection_model)
         return face_recognition.face_encodings(image, face_locations)
 
-    def encode_known_faces(self, model_name, image_filepath_list):
+    def encode_known_faces(self, model_name, image_filepath_list, face_detection_model):
         """
         Detects the face in each image, get its encoding, and groups them
-        together in a single dictionary, then save it into a pickle file.
+        together in a single dictionary, then saves it into a pickle file.
         """
+        logger.info(
+            "Face detection using '%s' face detection model.", face_detection_model
+        )
         names = []
         encodings = []
         for image_filepath in image_filepath_list:
             try:
-                face_encodings = self.get_face_encodings_from_image(image_filepath)
+                face_encodings = self.get_face_encodings_from_image(
+                    image_filepath, face_detection_model
+                )
+            # TODO Is this exception still necessary?
             except NoFacesDetectedError:
                 logger.error("No faces detected in %s.", image_filepath)
                 raise
@@ -80,24 +95,28 @@ class FaceRecognizer:
                 encodings.append(face_encoding)
 
         extracted_face_encodings = {"names": names, "encodings": encodings}
-        self.save_encodings_to_pickle(extracted_face_encodings, model_name)
+        self.save_encodings_to_pickle(
+            extracted_face_encodings, model_name, face_detection_model
+        )
 
-    def save_encodings_to_pickle(self, encodings, model_name):
+    def save_encodings_to_pickle(self, encodings, model_name, face_detection_model):
         """Saves the encoding to a pickle file."""
-        encoding_filename = f"{model_name}.pkl"
+        encoding_filename = f"{model_name}_{face_detection_model}.pkl"
         encoding_output = os.path.join(ENCODINGS_DIR, encoding_filename)
 
         with open(encoding_output, mode="wb") as fh:
             pickle.dump(encodings, fh)
 
-    def recognize_faces(self, image_filepath):
+    def recognize_faces(self, image_filepath, face_detection_model):
         """
         See if we can recognize the faces in the image using the existing face
         encodings we have in the system.
         """
         recognized_faces = set()
 
-        for face_encodings in self.get_face_encodings_from_image(image_filepath):
+        for face_encodings in self.get_face_encodings_from_image(
+            image_filepath, face_detection_model
+        ):
             if len(face_encodings) > 0:
                 recognized_faces.add(self.recognize_face(face_encodings))
 

@@ -115,7 +115,7 @@ class ImageSorter:
         # input/Hayley+Williams+5rtr.jpg test me
         return no_face_image_filepath
 
-    def sort_image_by_face_recognition(self, image_filepath):
+    def sort_image_by_face_recognition(self, image_filepath, face_detection_model):
         """Sorts the image by face recognition."""
         # for recognized_face in self.face_recognizer.recognize_faces(image_filepath):
         #     recognized_image_filepath = self.determine_recognized_image_filepath(
@@ -124,29 +124,40 @@ class ImageSorter:
         #     copy(image_filepath, recognized_image_filepath)
         #     logger.info("Copied %s to %s", image_filepath, recognized_image_filepath)
 
-        recognized_faces = self.face_recognizer.recognize_faces(image_filepath)
-        recognized_image_filepath = self.determine_recognized_image_filepath(
-            recognized_faces, image_filepath
-        )
-        copy(image_filepath, recognized_image_filepath)
-        logger.info("Copied %s to %s", image_filepath, recognized_image_filepath)
+        try:
+            recognized_faces = self.face_recognizer.recognize_faces(
+                image_filepath, face_detection_model
+            )
 
-        # archive processed images
-        # TODO zip processed images
-        # TODO create separate function
-        archive_image_filepath = self.determine_image_archive_filepath(image_filepath)
-        move(image_filepath, archive_image_filepath)
+            if recognized_faces:
+                recognized_image_filepath = self.determine_recognized_image_filepath(
+                    recognized_faces, image_filepath
+                )
+                copy(image_filepath, recognized_image_filepath)
+                logger.info("Copied %s to %s", image_filepath, recognized_image_filepath)
 
-    def sort_images_by_face_recognition(self, image_filepath_list):
+            else:
+                # archive processed images
+                # TODO zip processed images
+                # TODO create separate function
+                archive_image_filepath = self.determine_image_archive_filepath(
+                    image_filepath
+                )
+                move(image_filepath, archive_image_filepath)
+        except NoFacesDetectedError:
+            # TODO create separate function
+            no_face_image_filepath = self.determine_no_face_detected_filepath(
+                image_filepath
+            )
+            move(image_filepath, no_face_image_filepath)
+
+    def sort_images_by_face_recognition(
+        self, image_filepath_list, face_detection_model
+    ):
         """Sort the images by face recognition."""
         image_processed = 0
         for image_filepath in image_filepath_list:
-            try:
-                self.sort_image_by_face_recognition(image_filepath)
-                image_processed += 1
-            except NoFacesDetectedError:
-                # TODO create separate function
-                no_face_image_filepath = self.determine_no_face_detected_filepath(image_filepath)
-                move(image_filepath, no_face_image_filepath)
+            self.sort_image_by_face_recognition(image_filepath, face_detection_model)
+            image_processed += 1
 
         logger.info("Sorted %s image(s).", image_processed)

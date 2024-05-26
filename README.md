@@ -44,7 +44,9 @@ python -m unittest discover tests
 - try rotating the image?
 - add option to do not use CNN (to avoid memory issue)
   - or choose what option? like --hog-mode or --cnn-mode
-- add flag to reprocess no_faces_detected or unknown_faces?>
+- add flag to reprocess no_faces_detected or unknown_faces?
+- cleanup!
+- SOLID!
 
 ## Reference
 - https://realpython.com/face-recognition-with-python/
